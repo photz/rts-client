@@ -175,6 +175,17 @@ class ArmedPanel {
   }
 }
 
+class ResourcePanel {
+  Element _element;
+  Element get element => _element;
+  ResourcePanel(int entityId, data) {
+    _element = new DivElement();
+    _element.classes.add('resource-panel');
+    double amount = data['resources'][entityId.toString()]['amount'];
+    _element.innerHtml = 'Gold left: ' + amount.toInt().toString();
+  }
+}
+
 class UnitFactoryPanel {
   Element _element;
   var _data;
@@ -289,6 +300,13 @@ class ControlPanel {
       var healthPanel = new HealthPanel(entityId, data);
       _element.children.add(healthPanel.element);
 
+    }
+
+    if (data.containsKey('resources') &&
+        data['resources'].containsKey(entityId.toString())) {
+
+      var resourcePanel = new ResourcePanel(entityId, data);
+      _element.children.add(resourcePanel.element);
     }
   }
 
