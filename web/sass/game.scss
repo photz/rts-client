@@ -1,0 +1,74 @@
+body {
+  overflow: hidden;
+}
+
+.game {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.control-panel {
+  background: grey;
+  flex-basis: 30%;
+  z-index: 2;
+  display: flex;
+  justify-content: space-between;
+  &__sub-panel {
+    flex-basis: 100%;
+  }
+}
+
+.map-window {
+  background: white;
+  color: green;
+  flex-basis: 70%;
+
+  &__map {
+    position: absolute;
+  }
+
+  &__entity {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background: red;
+
+    &--friendly {
+      background: green;
+    }
+  }
+}
+
+.health-panel {
+  &__health-bar {
+    display: flex;
+    background-color: red;
+    position: relative;
+  }
+
+  &__health-remaining {
+    background-color: green;
+    min-height: 20px;
+  }
+
+  &__percentage {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    text-align: center;
+  }
+}
+
+.top-bar {
+  background: rgba(50,50,50,0.4);
+  &__funds {
+    
+  }
+}

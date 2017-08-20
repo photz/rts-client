@@ -1,0 +1,4 @@
+name: rts_demo_client
+description: The client for a simple networked real-time strategy game
+dependencies:
+
