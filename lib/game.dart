@@ -321,7 +321,7 @@ class TopBar {
   Element get element => _element;
 
   set funds(int value) {
-    _fundsEl.innerHtml = value.toString() + ' Gold';
+    _fundsEl.innerHtml = value.round().toString() + ' Gold';
   }
   
   TopBar() {
