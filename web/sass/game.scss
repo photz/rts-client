@@ -14,19 +14,26 @@ body {
 }
 
 .control-panel {
-  background: grey;
+  padding: 3px;
+  background: rgb(86,67,52);
   flex-basis: 30%;
   z-index: 2;
   display: flex;
   justify-content: space-between;
   &__sub-panel {
     flex-basis: 100%;
+    background: rgb(207,181,144);
+    border-radius: 3px;
+    margin-right: 3px;
+    padding: 5px;
+    &:last-of-type {
+      margin-right: 0;
+    }
   }
 }
 
 .map-window {
-  background: white;
-  color: green;
+  background: rgb(158,154,65);
   flex-basis: 70%;
 
   &__map {
@@ -37,15 +44,14 @@ body {
     position: absolute;
     width: 10px;
     height: 10px;
-    background: red;
+    background: rgb(234,42,21);
 
     &--friendly {
-      background: green;
+      background: rgb(42,92,11);
     }
 
     &--gold-mine {
-      background-color: orange;
-
+      background-color: rgb(255,229,69);
     }
   }
 }
@@ -53,12 +59,14 @@ body {
 .health-panel {
   &__health-bar {
     display: flex;
-    background-color: red;
+    background-color: rgb(234,42,21);
     position: relative;
+    overflow: hidden;
+    border-radius: 3px;
   }
 
   &__health-remaining {
-    background-color: green;
+    background-color: rgb(117,137,24);
     min-height: 20px;
   }
 
@@ -73,8 +81,14 @@ body {
 }
 
 .top-bar {
-  background: rgba(50,50,50,0.4);
-  &__funds {
-    
+  display: flex;
+  background: rgb(86,67,52);
+  border-bottom: 2px solid rgba(86,67,52, 0.5);
+  padding: 3px;
+  z-index: 1;
+  &__box {
+    border-radius: 3px;
+    background-color: rgb(207,181,144);
+    padding: 3px;
   }
 }
