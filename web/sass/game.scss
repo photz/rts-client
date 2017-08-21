@@ -54,6 +54,27 @@ body {
       background-color: rgb(255,229,69);
     }
   }
+
+  &__bumper {
+    position: absolute;
+    width: 30px;
+    background:white;
+    transition: opacity 0.3s;
+    opacity: 0;
+    &--left {
+      top: 0;
+      left: 0;
+      bottom: 0;
+    }
+    &--right {
+      top: 0;
+      right: 0;
+      bottom: 0;
+    }
+    &:hover {
+      opacity: 0.4;
+    }
+  }
 }
 
 .health-panel {

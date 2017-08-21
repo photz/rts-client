@@ -33,27 +33,56 @@ class SelectTarget {
 }
 
 class MapWindow {
-  double _zoomFactor = 30.0;
-  Element _element;
-  int _playerId;
-
   Element get element => _element;
-
+  Element _element;
+  Element _leftBumper;
+  Element _rightBumper;
   Element _map;
-
+  double _zoomFactor = 30.0;
+  int _playerId;
+  int _x = 0;
+  int _y = 300;
   StreamController _streamController = new StreamController.broadcast();
-
   CustomStream get events => _streamController.stream;
+  int _step = 30;
 
   MapWindow(this._playerId) {
-    _element = new DivElement();
-    _element.classes.add('map-window');
-    _map = new DivElement();
-    _map.classes.add('map-window__map');
-    _map.style.top = '600px';
-    _element.children.add(_map);
-    _element.onClick.listen(this._handleClick);
-    _element.onContextMenu.listen(this._handleContextMenu);
+    _map = new DivElement()
+      ..classes.add('map-window__map');
+
+    _leftBumper = new DivElement()
+      ..classes.add('map-window__bumper')
+      ..classes.add('map-window__bumper--left')
+      ..onMouseOver.listen(this._onTouchLeftBumper);
+
+    _rightBumper = new DivElement()
+      ..classes.add('map-window__bumper')
+      ..classes.add('map-window__bumper--right')
+      ..onMouseOver.listen(this._onTouchRightBumper);
+
+    _element = new DivElement()
+      ..classes.add('map-window')
+      ..children.add(_map)
+      ..children.add(_leftBumper)
+      ..children.add(_rightBumper)
+      ..onClick.listen(this._handleClick)
+      ..onContextMenu.listen(this._handleContextMenu);
+
+    _translate(_x, _y);
+  }
+
+  void _onTouchLeftBumper(ev) {
+    _x = _x + _step;
+    _translate(_x, _y);
+  }
+
+  void _onTouchRightBumper(ev) {
+    _x = _x - _step;
+    _translate(_x, _y);
+  }
+
+  void _translate(int x, int y) {
+    _map.style.transform = 'translate3d(${x}px,${y}px,0)';
   }
 
   void _handleContextMenu(ev) {
