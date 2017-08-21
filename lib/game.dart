@@ -175,6 +175,7 @@ class UnitPanel {
   UnitPanel(this._entityId, this._data) {
     _element = new DivElement();
     _element.classes.add('unit-panel');
+    _element.classes.add('control-panel__sub-panel');
     _element.innerHtml = 'This is a unit. You can order this unit to go somewhere by right-clicking on the map.';
     _element.onClick.listen(this._handleClick);
   }
@@ -210,6 +211,7 @@ class ResourcePanel {
   ResourcePanel(int entityId, data) {
     _element = new DivElement();
     _element.classes.add('resource-panel');
+    _element.classes.add('control-panel__sub-panel');
     double amount = data['resources'][entityId.toString()]['amount'];
     _element.innerHtml = 'Gold left: ' + amount.toInt().toString();
   }

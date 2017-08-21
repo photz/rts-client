@@ -21,7 +21,7 @@ body {
   display: flex;
   justify-content: space-between;
   &__sub-panel {
-    flex-basis: 100%;
+    flex-basis: 50%;
     background: rgb(207,181,144);
     border-radius: 3px;
     margin-right: 3px;
