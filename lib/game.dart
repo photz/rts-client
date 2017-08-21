@@ -357,7 +357,7 @@ class TopBar {
   
   TopBar() {
     _element.classes.add('top-bar');
-    _fundsEl.classes.add('top-bar__funds');
+    _fundsEl.classes.add('top-bar__box');
     _element.children.add(_fundsEl);
   }
 }
