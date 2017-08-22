@@ -229,14 +229,29 @@ class UnitFactoryPanel {
   CustomStream get events => _streamController.stream;
 
   UnitFactoryPanel(this._entityId, this._data) {
-    _element = new DivElement();
-    _element.classes.add('control-panel__sub-panel');
-    _element.classes.add('unit-factory-panel');
-    _element.innerHtml = 'length of queue: ' + _data['in_queue'].toString();
-    Element button = new ButtonElement();
-    button.innerHtml = 'produce';
-    _element.children.add(button);
-    button.onClick.listen(this._handleClick);
+
+    Element button = new ButtonElement()
+      ..innerHtml = 'produce'
+      ..onClick.listen(this._handleClick);
+
+    Element queue = new DivElement()
+      ..classes.add('unit-factory-panel__queue');
+
+
+    _element = new DivElement()
+      ..classes.add('control-panel__sub-panel')
+      ..classes.add('unit-factory-panel')
+      ..children.add(queue)
+      ..children.add(button);
+
+    int lengthOfQueue = _data['in_queue'];
+
+    for (var i = 0; i < lengthOfQueue; i++) {
+      Element unit = new DivElement()
+        ..classes.add('unit-factory-panel__unit');
+
+      queue.children.add(unit);
+    }
   }
 
   void _handleClick(ev) {

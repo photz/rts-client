@@ -113,3 +113,18 @@ body {
     padding: 3px;
   }
 }
+
+.unit-factory-panel {
+  &__queue {
+    display: flex;
+  }
+  &__unit {
+    margin-right: 5px;
+    width: 30px;
+    height: 40px;
+    background: rgb(86,67,52);
+    &:last-of-type {
+      margin-right: 0;
+    }
+  }
+}
