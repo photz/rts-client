@@ -38,13 +38,15 @@ class MapWindow {
   Element _leftBumper;
   Element _rightBumper;
   Element _map;
-  double _zoomFactor = 30.0;
+  double _zoomFactor = 10.0;
   int _playerId;
   int _x = 0;
-  int _y = 300;
+  int _y = 30;
   StreamController _streamController = new StreamController.broadcast();
   CustomStream get events => _streamController.stream;
-  int _step = 30;
+  // the translation in world units applied when the player's
+  // pointer touches the 'bumper'
+  int _step = 3;
 
   MapWindow(this._playerId) {
     _map = new DivElement()
@@ -67,22 +69,14 @@ class MapWindow {
       ..children.add(_rightBumper)
       ..onClick.listen(this._handleClick)
       ..onContextMenu.listen(this._handleContextMenu);
-
-    _translate(_x, _y);
   }
 
   void _onTouchLeftBumper(ev) {
     _x = _x + _step;
-    _translate(_x, _y);
   }
 
   void _onTouchRightBumper(ev) {
     _x = _x - _step;
-    _translate(_x, _y);
-  }
-
-  void _translate(int x, int y) {
-    _map.style.transform = 'translate3d(${x}px,${y}px,0)';
   }
 
   void _handleContextMenu(ev) {
@@ -95,8 +89,8 @@ class MapWindow {
       // determine coordinates relative to the map
       _map.style.display = '';
       var rec = _map.getBoundingClientRect();
-      double x = (ev.client.x + rec.left) / _zoomFactor;
-      double y = -(ev.client.y - rec.top) / _zoomFactor;
+      double x = ev.client.x / _zoomFactor - _x;
+      double y = -(ev.client.y - rec.top) / _zoomFactor + _y;
 
       var newEv = new SelectPosition(x, y);
       _streamController.add(newEv);
@@ -124,10 +118,6 @@ class MapWindow {
 
       entityEl.dataset['entityId'] = entityId.toString();
 
-      var x = pointMass['position']['x'];
-      var y = pointMass['position']['y'];
-
-
       if (state.containsKey('resources') &&
           state['resources'].containsKey(entityId)) {
         entityEl.classes.add('map-window__entity--gold-mine');
@@ -151,11 +141,14 @@ class MapWindow {
           entityEl.classes.add('map-window__entity--friendly');
         }
       }
+      
+      var xWorld = pointMass['position']['x'];
+      var yWorld = pointMass['position']['y'];
 
+      var xScreen = (xWorld + _x) * _zoomFactor;
+      var yScreen = (_y - yWorld) * _zoomFactor;
 
-
-      entityEl.style.top = (((-1) * y * _zoomFactor)).toString() + 'px';
-      entityEl.style.left = (_zoomFactor * x).toString() + 'px';
+      entityEl.style.transform = 'translate3d(${xScreen}px,${yScreen}px,0)';
 
       _map.children.add(entityEl);
     });
