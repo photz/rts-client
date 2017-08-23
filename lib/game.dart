@@ -90,6 +90,8 @@ class Game {
     } on NoSuchMethodError catch(e) {}
 
     _map.rerender(data);
+
+    _controlPanel.update(data);
   }
 
   void _handleControlPanelEvents(ev) {

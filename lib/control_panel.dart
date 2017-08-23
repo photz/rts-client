@@ -8,7 +8,7 @@ class CreateUnit {
 
 
 abstract class SubPanel {
-  
+  void update(data);
 }
 
 class UnitPanel extends SubPanel {
@@ -30,6 +30,7 @@ class UnitPanel extends SubPanel {
         ..innerHtml = 'This is a unit. You can order this unit to go somewhere by right-clicking on the map.';
     }
   }
+  void update(data) {}
 }
 
 class ArmedPanel extends SubPanel {
@@ -57,6 +58,7 @@ class ArmedPanel extends SubPanel {
       ..children.add(damageEl)
       ..children.add(minDistEl);
   }
+  void update(data) {}
 }
 
 class ResourcePanel extends SubPanel {
@@ -65,14 +67,18 @@ class ResourcePanel extends SubPanel {
   
   Element _element;
   StreamController _streamController = new StreamController.broadcast();
+  int _entityId;
 
-  ResourcePanel(playerId, int entityId, data) {
-    double amount = data['resources'][entityId.toString()]['amount'];
-
+  ResourcePanel(playerId, this._entityId, data) {
     _element = new DivElement()
       ..classes.add('resource-panel')
-      ..classes.add('control-panel__sub-panel')
-      ..innerHtml = 'Gold left: ' + amount.toInt().toString();
+      ..classes.add('control-panel__sub-panel');
+
+    update(data);
+  }
+  void update(data) {
+    double amount = data['resources'][_entityId.toString()]['amount'];
+    _element.innerHtml = 'Gold left: ' + amount.toInt().toString();
   }
 }
 
@@ -81,14 +87,15 @@ class UnitFactoryPanel extends SubPanel {
   CustomStream get events => _streamController.stream;
 
   final Element _element = new DivElement();
-  var _data;
   int _entityId;
   StreamController _streamController = new StreamController.broadcast();
+  Element _queue;
+  int _playerId;
 
-  UnitFactoryPanel(int playerId, this._entityId, this._data) {
+  UnitFactoryPanel(this._playerId, this._entityId, data) {
 
-    if (!_data.containsKey('ownership') ||
-        _data['ownership'][_entityId.toString()] != playerId) {
+    if (!data.containsKey('ownership') ||
+        data['ownership'][_entityId.toString()] != _playerId) {
 
       return;
     }
@@ -97,22 +104,34 @@ class UnitFactoryPanel extends SubPanel {
       ..innerHtml = 'produce'
       ..onClick.listen(this._handleClick);
 
-    Element queue = new DivElement()
+    _queue = new DivElement()
       ..classes.add('unit-factory-panel__queue');
 
     _element
       ..classes.add('control-panel__sub-panel')
       ..classes.add('unit-factory-panel')
-      ..children.add(queue)
+      ..children.add(_queue)
       ..children.add(button);
 
-    int lengthOfQueue = _data['unit_factories'][_entityId.toString()]['in_queue'];
+    update(data);
+  }
+
+  void update(data) {
+    if (!data.containsKey('ownership') ||
+        data['ownership'][_entityId.toString()] != _playerId) {
+
+      return;
+    }
+
+    _queue.children.clear();
+
+    int lengthOfQueue = data['unit_factories'][_entityId.toString()]['in_queue'];
 
     for (var i = 0; i < lengthOfQueue; i++) {
       Element unit = new DivElement()
         ..classes.add('unit-factory-panel__unit');
 
-      queue.children.add(unit);
+      _queue.children.add(unit);
     }
   }
 
@@ -127,33 +146,41 @@ class HealthPanel extends SubPanel {
 
   Element _element;
   StreamController _sc = new StreamController.broadcast();
+  Element _healthRemaining;
+  Element _percentageEl;
+  int _entityId;
 
-  HealthPanel(int playerId, int entityId, data) {
+  HealthPanel(int playerId, this._entityId, data) {
 
-    double hp = data['health'][entityId.toString()]['hp'];
-    double maxHp = data['health'][entityId.toString()]['max_hp'];
-
-    double percentage = 100.0 * hp / maxHp;
-
-    Element healthRemaining = new DivElement()
-      ..classes.add('health-panel__health-remaining')
-      ..style.width = percentage.toInt().toString() + '%';
+    _healthRemaining = new DivElement()
+      ..classes.add('health-panel__health-remaining');
     
-    Element percentageEl = new DivElement()
-      ..classes.add('health-panel__percentage')
-      ..innerHtml = percentage.toString() + '%';
+    _percentageEl = new DivElement()
+      ..classes.add('health-panel__percentage');
 
     Element healthBar = new DivElement()
       ..classes.add('health-panel__health-bar')
-      ..children.add(healthRemaining)
-      ..children.add(percentageEl);
+      ..children.add(_healthRemaining)
+      ..children.add(_percentageEl);
 
     _element = new DivElement()
       ..classes.add('control-panel__sub-panel')
       ..classes.add('health-panel')
       ..children.add(healthBar);
+
+    update(data);
   }
 
+  void update(data) {
+    double hp = data['health'][_entityId.toString()]['hp'];
+    double maxHp = data['health'][_entityId.toString()]['max_hp'];
+
+    double percentage = 100.0 * hp / maxHp;
+
+    _healthRemaining.style.width = percentage.toInt().toString() + '%';
+
+    _percentageEl.innerHtml = percentage.toString() + '%';
+  }
 }
 
 
@@ -202,6 +229,10 @@ class ControlPanel {
       _element.children.add(subPanel.element);
 
     });
+  }
+
+  void update(data) {
+    _currentSubPanels.forEach((subPanel) => subPanel.update(data));
   }
 
   void _handleEvents(ev) {
