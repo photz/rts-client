@@ -8,70 +8,69 @@ class CreateUnit {
 
 
 class UnitPanel {
+  Element get element => _element;
+  CustomStream get events => _streamController.stream;
+
   Element _element;
   var _data;
   int _entityId;
-
-  Element get element => _element;
-
   StreamController _streamController = new StreamController.broadcast();
-  CustomStream get events => _streamController.stream;
 
   UnitPanel(this._entityId, this._data) {
-    _element = new DivElement();
-    _element.classes.add('unit-panel');
-    _element.classes.add('control-panel__sub-panel');
-    _element.innerHtml = 'This is a unit. You can order this unit to go somewhere by right-clicking on the map.';
-    _element.onClick.listen(this._handleClick);
-  }
-
-  void _handleClick(ev) {
-    
+    _element = new DivElement()
+      ..classes.add('unit-panel')
+      ..classes.add('control-panel__sub-panel')
+      ..innerHtml = 'This is a unit. You can order this unit to go somewhere by right-clicking on the map.';
   }
 }
 
 class ArmedPanel {
   Element _element;
   Element get element => _element;
+
   ArmedPanel(int entityId, data) {
-    _element = new DivElement();
-    _element.classes.add('control-panel__sub-panel');
-    _element.classes.add('armed-panel');
 
     double damage = data['armed'][entityId.toString()]['damage'];
-    Element damageEl = new DivElement();
-    damageEl.innerHtml = 'Damage: ' + damage.toString();
-    _element.children.add(damageEl);
+
+    Element damageEl = new DivElement()
+      ..innerHtml = 'Damage: ' + damage.toString();
 
     double minDist = data['armed'][entityId.toString()]['min_dist'];
-    Element minDistEl = new DivElement();
-    minDistEl.innerHtml = 'Minimum distance: ' + minDist.toString();
-    _element.children.add(minDistEl);
+
+    Element minDistEl = new DivElement()
+      ..innerHtml = 'Minimum distance: ' + minDist.toString();
+
+    _element = new DivElement()
+      ..classes.add('control-panel__sub-panel')
+      ..classes.add('armed-panel')
+      ..children.add(damageEl)
+      ..children.add(minDistEl);
   }
 }
 
 class ResourcePanel {
-  Element _element;
   Element get element => _element;
+
+  Element _element;
+
   ResourcePanel(int entityId, data) {
-    _element = new DivElement();
-    _element.classes.add('resource-panel');
-    _element.classes.add('control-panel__sub-panel');
     double amount = data['resources'][entityId.toString()]['amount'];
-    _element.innerHtml = 'Gold left: ' + amount.toInt().toString();
+
+    _element = new DivElement()
+      ..classes.add('resource-panel')
+      ..classes.add('control-panel__sub-panel')
+      ..innerHtml = 'Gold left: ' + amount.toInt().toString();
   }
 }
 
 class UnitFactoryPanel {
+  Element get element => _element;
+  CustomStream get events => _streamController.stream;
+
   Element _element;
   var _data;
   int _entityId;
-
-  Element get element => _element;
-
   StreamController _streamController = new StreamController.broadcast();
-
-  CustomStream get events => _streamController.stream;
 
   UnitFactoryPanel(this._entityId, this._data) {
 
@@ -105,54 +104,57 @@ class UnitFactoryPanel {
 }
 
 class HealthPanel {
-  Element _element;
   Element get element => _element;
-  StreamController _sc = new StreamController.broadcast();
   CustomStream get events => _sc.stream;
+
+  Element _element;
+  StreamController _sc = new StreamController.broadcast();
+
   HealthPanel(int entityId, data) {
-    _element = new DivElement();
-    _element.classes.add('control-panel__sub-panel');    
-    _element.classes.add('health-panel');
+
     double hp = data['health'][entityId.toString()]['hp'];
     double maxHp = data['health'][entityId.toString()]['max_hp'];
 
-    Element healthBar = new DivElement();
-    healthBar.classes.add('health-panel__health-bar');
-    _element.children.add(healthBar);
-
-    Element healthRemaining = new DivElement();
-    healthRemaining.classes.add('health-panel__health-remaining');
-    healthBar.children.add(healthRemaining);
-
     double percentage = 100.0 * hp / maxHp;
-    healthRemaining.style.width = percentage.toInt().toString() + '%';
+
+    Element healthRemaining = new DivElement()
+      ..classes.add('health-panel__health-remaining')
+      ..style.width = percentage.toInt().toString() + '%';
     
-    Element percentageEl = new DivElement();
-    percentageEl.classes.add('health-panel__percentage');
-    percentageEl.innerHtml = percentage.toString() + '%';
-    healthBar.children.add(percentageEl);
+    Element percentageEl = new DivElement()
+      ..classes.add('health-panel__percentage')
+      ..innerHtml = percentage.toString() + '%';
+
+    Element healthBar = new DivElement()
+      ..classes.add('health-panel__health-bar')
+      ..children.add(healthRemaining)
+      ..children.add(percentageEl);
+
+    _element = new DivElement()
+      ..classes.add('control-panel__sub-panel')
+      ..classes.add('health-panel')
+      ..children.add(healthBar);
   }
 }
 
 
 class ControlPanel {
+  Element get element => _element;
+  CustomStream get events => _streamController.stream;
+
   Element _element;
   var _currentPanel;
   StreamController _streamController = new StreamController.broadcast();
   int _playerId;
 
-  Element get element => _element;
-  CustomStream get events => _streamController.stream;
-
   ControlPanel(this._playerId) {
-    _element = new DivElement();
-    _element.classes.add('control-panel');
+    _element = new DivElement()
+      ..classes.add('control-panel');
   }
 
   void setSelectedEntity(data, int entityId) {
     _element.children.clear();
     _currentPanel = null;
-
 
     bool friendly = false;
 
