@@ -7,6 +7,6 @@ void main() {
 
   var body = querySelector('body');
 
-  body.children.add(game.getElement());
+  body.children.add(game.element);
 }
 

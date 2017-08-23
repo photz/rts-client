@@ -6,14 +6,10 @@ import 'package:rts_demo_client/control_panel.dart';
 import 'package:rts_demo_client/server.dart';
 import 'package:rts_demo_client/top_bar.dart';
 
-class Coord {
-  double x;
-  double y;
-  
-  Coord(this.x, this.y);
-}
 
 class Game {
+  Element get element => _element;
+  
   Server _server;
   Element _element;
   MapWindow _map;
@@ -24,12 +20,13 @@ class Game {
   StreamSubscription _serverMsgSubscription;
   TopBar _topBar;
 
-  Game() {
-    _element = new DivElement();
-    _element.classes.add('game');
-    _server = new Server('ws://127.0.0.1', 9004);
-    _serverMsgSubscription = _server.events.listen(this._handleInitialMessage);
+  Game(String host, int port) {
+    _element = new DivElement()
+      ..classes.add('game');
 
+    _server = new Server('ws://127.0.0.1', 9004);
+
+    _serverMsgSubscription = _server.events.listen(this._handleInitialMessage);
   }
 
   void _handleMapEvent(ev) {
@@ -67,13 +64,18 @@ class Game {
     _playerId = data['player_id'];
 
     _topBar = new TopBar();
-    _element.children.add(_topBar.element);
-    _map = new MapWindow(_playerId);
-    _map.events.listen(this._handleMapEvent);
-    _controlPanel = new ControlPanel(_playerId);
-    _controlPanel.events.listen(this._handleControlPanelEvents);
-    _element.children.add(_map.element);
-    _element.children.add(_controlPanel.element);
+
+    _map = new MapWindow(_playerId)
+      ..events.listen(this._handleMapEvent);
+
+    _controlPanel = new ControlPanel(_playerId)
+      ..events.listen(this._handleControlPanelEvents);
+
+    _element.children
+      ..add(_topBar.element)
+      ..add(_map.element)
+      ..add(_controlPanel.element);
+
     _serverMsgSubscription.onData(this._updateCallback);
   }
 
@@ -85,10 +87,6 @@ class Game {
     } on NoSuchMethodError catch(e) {}
 
     _map.rerender(data);
-  }
-
-  Element getElement() {
-    return _element;
   }
 
   void _handleControlPanelEvents(ev) {
