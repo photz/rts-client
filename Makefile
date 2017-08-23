@@ -1,5 +1,5 @@
 SHELL=/bin/bash
-pubflags=--mode debug
+pubflags=--mode debug --define host="ws://127.0.0.1" --define port=9004
 dartanalyzer=/usr/lib/dart/bin/dartanalyzer
 dartanalyzerflags=--strong --lints --package-warnings
 dirs=test web lib

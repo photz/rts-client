@@ -24,7 +24,7 @@ class Game {
     _element = new DivElement()
       ..classes.add('game');
 
-    _server = new Server('ws://127.0.0.1', 9004);
+    _server = new Server(host, port);
 
     _serverMsgSubscription = _server.events.listen(this._handleInitialMessage);
   }
