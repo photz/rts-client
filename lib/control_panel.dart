@@ -152,9 +152,13 @@ class ControlPanel {
       ..classes.add('control-panel');
   }
 
-  void setSelectedEntity(data, int entityId) {
+  void clear() {
     _element.children.clear();
     _currentPanel = null;
+  }
+
+  void setSelectedEntity(data, int entityId) {
+    clear();
 
     bool friendly = false;
 

@@ -58,6 +58,9 @@ class Game {
         }
       });
     }
+    else if (ev is Unselect) {
+      _controlPanel.clear();
+    }
   }
 
   void _handleInitialMessage(data) {

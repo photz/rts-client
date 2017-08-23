@@ -1,6 +1,10 @@
 import 'dart:async';
 import 'dart:html';
 
+class Unselect {
+  Unselect();
+}
+
 class EntitySelect {
   int entityId;
 
@@ -91,6 +95,9 @@ class MapWindow {
       int entityId = int.parse(ev.target.dataset['entityId']);
 
       _streamController.add(new EntitySelect(entityId));      
+    }
+    else {
+      _streamController.add(new Unselect());
     }
   }
 
