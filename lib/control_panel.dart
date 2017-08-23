@@ -7,28 +7,39 @@ class CreateUnit {
 }
 
 
-class UnitPanel {
+abstract class SubPanel {
+  
+}
+
+class UnitPanel extends SubPanel {
   Element get element => _element;
   CustomStream get events => _streamController.stream;
 
-  Element _element;
+  final Element _element = new DivElement();
   var _data;
   int _entityId;
   StreamController _streamController = new StreamController.broadcast();
 
-  UnitPanel(this._entityId, this._data) {
-    _element = new DivElement()
-      ..classes.add('unit-panel')
-      ..classes.add('control-panel__sub-panel')
-      ..innerHtml = 'This is a unit. You can order this unit to go somewhere by right-clicking on the map.';
+  UnitPanel(playerId, this._entityId, this._data) {
+    if (_data.containsKey('ownership') &&
+        _data['ownership'][_entityId.toString()] == playerId) {
+
+      _element
+        ..classes.add('unit-panel')
+        ..classes.add('control-panel__sub-panel')
+        ..innerHtml = 'This is a unit. You can order this unit to go somewhere by right-clicking on the map.';
+    }
   }
 }
 
-class ArmedPanel {
-  Element _element;
+class ArmedPanel extends SubPanel {
+  CustomStream get events => _streamController.stream;
   Element get element => _element;
 
-  ArmedPanel(int entityId, data) {
+  Element _element;
+  StreamController _streamController = new StreamController.broadcast();
+
+  ArmedPanel(int playerId, int entityId, data) {
 
     double damage = data['armed'][entityId.toString()]['damage'];
 
@@ -48,12 +59,14 @@ class ArmedPanel {
   }
 }
 
-class ResourcePanel {
+class ResourcePanel extends SubPanel {
   Element get element => _element;
-
+  CustomStream get events => _streamController.stream;
+  
   Element _element;
+  StreamController _streamController = new StreamController.broadcast();
 
-  ResourcePanel(int entityId, data) {
+  ResourcePanel(playerId, int entityId, data) {
     double amount = data['resources'][entityId.toString()]['amount'];
 
     _element = new DivElement()
@@ -63,16 +76,22 @@ class ResourcePanel {
   }
 }
 
-class UnitFactoryPanel {
+class UnitFactoryPanel extends SubPanel {
   Element get element => _element;
   CustomStream get events => _streamController.stream;
 
-  Element _element;
+  final Element _element = new DivElement();
   var _data;
   int _entityId;
   StreamController _streamController = new StreamController.broadcast();
 
-  UnitFactoryPanel(this._entityId, this._data) {
+  UnitFactoryPanel(int playerId, this._entityId, this._data) {
+
+    if (!_data.containsKey('ownership') ||
+        _data['ownership'][_entityId.toString()] != playerId) {
+
+      return;
+    }
 
     Element button = new ButtonElement()
       ..innerHtml = 'produce'
@@ -81,14 +100,13 @@ class UnitFactoryPanel {
     Element queue = new DivElement()
       ..classes.add('unit-factory-panel__queue');
 
-
-    _element = new DivElement()
+    _element
       ..classes.add('control-panel__sub-panel')
       ..classes.add('unit-factory-panel')
       ..children.add(queue)
       ..children.add(button);
 
-    int lengthOfQueue = _data['in_queue'];
+    int lengthOfQueue = _data['unit_factories'][_entityId.toString()]['in_queue'];
 
     for (var i = 0; i < lengthOfQueue; i++) {
       Element unit = new DivElement()
@@ -103,14 +121,14 @@ class UnitFactoryPanel {
   }
 }
 
-class HealthPanel {
+class HealthPanel extends SubPanel {
   Element get element => _element;
   CustomStream get events => _sc.stream;
 
   Element _element;
   StreamController _sc = new StreamController.broadcast();
 
-  HealthPanel(int entityId, data) {
+  HealthPanel(int playerId, int entityId, data) {
 
     double hp = data['health'][entityId.toString()]['hp'];
     double maxHp = data['health'][entityId.toString()]['max_hp'];
@@ -135,6 +153,7 @@ class HealthPanel {
       ..classes.add('health-panel')
       ..children.add(healthBar);
   }
+
 }
 
 
@@ -142,8 +161,16 @@ class ControlPanel {
   Element get element => _element;
   CustomStream get events => _streamController.stream;
 
+  static final Map _subPanels = {
+    'health' : (pId, eId, d) => new HealthPanel(pId, eId, d),
+    'armed' : (pId, eId, d) => new ArmedPanel(pId, eId, d),
+    'commands' : (pId, eId, d) => new UnitPanel(pId, eId, d),
+    'resources' : (pId, eId, d) => new ResourcePanel(pId, eId, d),
+    'unit_factories' : (pId, eId, d) => new UnitFactoryPanel(pId, eId, d)
+  };
+
   Element _element;
-  var _currentPanel;
+  List<SubPanel> _currentSubPanels = [];
   StreamController _streamController = new StreamController.broadcast();
   int _playerId;
 
@@ -153,58 +180,28 @@ class ControlPanel {
   }
 
   void clear() {
+    _currentSubPanels.clear();
     _element.children.clear();
-    _currentPanel = null;
   }
 
   void setSelectedEntity(data, int entityId) {
     clear();
 
-    bool friendly = false;
+    _subPanels.forEach((componentName, subPanelConstructor) {
 
-    if (data.containsKey('ownership') &&
-        data['ownership'].containsKey(entityId.toString())) {
-        
-      friendly = data['ownership'][entityId.toString()] == _playerId;
-    }
+      if (!data.containsKey(componentName) ||
+          !data[componentName].containsKey(entityId.toString())) {
+        return;
+      }
 
-    if (friendly && data.containsKey('commands') &&
-        data['commands'].containsKey(entityId.toString())) {
+      var subPanel = subPanelConstructor(_playerId, entityId, data)
+        ..events.listen(this._handleEvents);
 
-      _currentPanel = new UnitPanel(entityId, data['commands'][entityId.toString()]);
-      _element.children.add(_currentPanel.element);
-      _currentPanel.events.listen(this._handleEvents);
+      _currentSubPanels.add(subPanel);
 
-    }
+      _element.children.add(subPanel.element);
 
-    if (friendly && data.containsKey('unit_factories') &&
-        data['unit_factories'].containsKey(entityId.toString())) {
-
-      _currentPanel = new UnitFactoryPanel(entityId, data['unit_factories'][entityId.toString()]);
-      _element.children.add(_currentPanel.element);
-      _currentPanel.events.listen(this._handleEvents);
-    }
-
-    if (data.containsKey('armed') &&
-        data['armed'].containsKey(entityId.toString())) {
-      var armedPanel = new ArmedPanel(entityId, data);
-      _element.children.add(armedPanel.element);
-    }
-
-    if (data.containsKey('health') &&
-        data['health'].containsKey(entityId.toString())) {
-
-      var healthPanel = new HealthPanel(entityId, data);
-      _element.children.add(healthPanel.element);
-
-    }
-
-    if (data.containsKey('resources') &&
-        data['resources'].containsKey(entityId.toString())) {
-
-      var resourcePanel = new ResourcePanel(entityId, data);
-      _element.children.add(resourcePanel.element);
-    }
+    });
   }
 
   void _handleEvents(ev) {
