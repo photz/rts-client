@@ -9,9 +9,9 @@ class Server {
   CustomStream get events => _streamController.stream;
 
   Server(String host, int port) {
-    _ws = new WebSocket(host + ':' + port.toString());
-    _ws.onOpen.listen(this._onOpen);
-    _ws.onError.listen(this._onError);
+    _ws = new WebSocket(host + ':' + port.toString())
+      ..onOpen.listen(this._onOpen)
+      ..onError.listen(this._onError);
   }
 
   void _onOpen(Event e) {
