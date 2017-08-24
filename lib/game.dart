@@ -1,5 +1,5 @@
-import 'dart:html';
 import 'dart:async';
+import 'dart:html';
 
 import 'package:rts_demo_client/map_window.dart';
 import 'package:rts_demo_client/control_panel.dart';
