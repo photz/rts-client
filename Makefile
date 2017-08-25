@@ -26,7 +26,7 @@ build: web/*.dart analyze
 
 
 build-sass:
-	find web/sass/ -name '*.scss' | awk '{print "@import \"" $$0 "\""}' | SASS_PATH='.' sass --scss --stdin > $(css_dest)
+	find web/sass/ -name '*.scss' | awk '{print "@import \"" $$0 "\";"}' | SASS_PATH='.' sass --scss --stdin > $(css_dest)
 	cp $(css_dest) build/web/styles.css
 
 analyze: 
