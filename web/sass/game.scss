@@ -13,25 +13,6 @@ body {
   font-family: sans-serif;
 }
 
-.control-panel {
-  padding: 3px;
-  background: rgb(86,67,52);
-  flex-basis: 30%;
-  z-index: 2;
-  display: flex;
-  justify-content: space-between;
-  &__sub-panel {
-    flex-basis: 50%;
-    background: rgb(207,181,144);
-    border-radius: 3px;
-    margin-right: 3px;
-    padding: 5px;
-    &:last-of-type {
-      margin-right: 0;
-    }
-  }
-}
-
 .map-window {
   background: rgb(158,154,65);
   flex-basis: 70%;
@@ -74,82 +55,5 @@ body {
     &:hover {
       opacity: 0.4;
     }
-  }
-}
-
-.health-panel {
-  &__health-bar {
-    display: flex;
-    background-color: rgb(234,42,21);
-    position: relative;
-    overflow: hidden;
-    border-radius: 3px;
-  }
-
-  &__health-remaining {
-    background-color: rgb(117,137,24);
-    min-height: 20px;
-  }
-
-  &__percentage {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    text-align: center;
-  }
-}
-
-.top-bar {
-  display: flex;
-  justify-content: space-between;
-  background: rgb(86,67,52);
-  border-bottom: 2px solid rgba(86,67,52, 0.5);
-  padding: 3px;
-  z-index: 1;
-  &__box {
-    border-radius: 3px;
-    background-color: rgb(207,181,144);
-    padding: 3px;
-  }
-  &__menu-button {
-    border-radius: 3px;
-    background-color: rgb(207,181,144);
-    padding: 3px;
-    text-decoration: none;
-    color: rgb(86,67,52);
-  }
-}
-
-.unit-factory-panel {
-  &__queue {
-    display: flex;
-  }
-  &__unit {
-    margin-right: 5px;
-    width: 30px;
-    height: 40px;
-    background: rgb(86,67,52);
-    &:last-of-type {
-      margin-right: 0;
-    }
-  }
-}
-
-.main-menu {
-  display: flex;
-  flex-direction: column;
-  transform: translate3d(-50%,-50%,0);
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  background: #564334;
-  padding: 5px;
-  &__item {
-    padding: 5px;
-    color: #cfb590;
-    background: #564334;
-    border: none;
   }
 }

@@ -1,0 +1,17 @@
+
+.main-menu {
+  display: flex;
+  flex-direction: column;
+  transform: translate3d(-50%,-50%,0);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  background: #564334;
+  padding: 5px;
+  &__item {
+    padding: 5px;
+    color: #cfb590;
+    background: #564334;
+    border: none;
+  }
+}
