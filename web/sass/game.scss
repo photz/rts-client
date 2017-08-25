@@ -103,6 +103,7 @@ body {
 
 .top-bar {
   display: flex;
+  justify-content: space-between;
   background: rgb(86,67,52);
   border-bottom: 2px solid rgba(86,67,52, 0.5);
   padding: 3px;
@@ -111,6 +112,13 @@ body {
     border-radius: 3px;
     background-color: rgb(207,181,144);
     padding: 3px;
+  }
+  &__menu-button {
+    border-radius: 3px;
+    background-color: rgb(207,181,144);
+    padding: 3px;
+    text-decoration: none;
+    color: rgb(86,67,52);
   }
 }
 
@@ -126,5 +134,22 @@ body {
     &:last-of-type {
       margin-right: 0;
     }
+  }
+}
+
+.main-menu {
+  display: flex;
+  flex-direction: column;
+  transform: translate3d(-50%,-50%,0);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  background: #564334;
+  padding: 5px;
+  &__item {
+    padding: 5px;
+    color: #cfb590;
+    background: #564334;
+    border: none;
   }
 }

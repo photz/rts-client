@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:html';
 
+import 'package:rts_demo_client/main_menu.dart';
 import 'package:rts_demo_client/map_window.dart';
 import 'package:rts_demo_client/control_panel.dart';
 import 'package:rts_demo_client/server.dart';
@@ -19,10 +20,12 @@ class Game {
   int _playerId = 0;
   StreamSubscription _serverMsgSubscription;
   TopBar _topBar;
+  MainMenu _mainMenu = new MainMenu();
 
   Game(String host, int port) {
     _element = new DivElement()
-      ..classes.add('game');
+      ..classes.add('game')
+      ..onKeyDown.listen(this._onKeyDown);
 
     _server = new Server(host, port);
 
@@ -66,7 +69,8 @@ class Game {
   void _handleInitialMessage(data) {
     _playerId = data['player_id'];
 
-    _topBar = new TopBar();
+    _topBar = new TopBar()
+      ..events.listen(this._onTopBarEvent);
 
     _map = new MapWindow(_playerId)
       ..events.listen(this._handleMapEvent);
@@ -92,6 +96,20 @@ class Game {
     _map.rerender(data);
 
     _controlPanel.update(data);
+  }
+
+  void _onKeyDown(KeyboardEvent e) {
+    switch (e.keyCode) {
+      case KeyCode.ESC:
+        _mainMenu.element.remove();
+        break;
+    }
+  }
+
+  void _onTopBarEvent(ev) {
+    if (ev is OpenMenu) {
+      _element.children.add(_mainMenu.element);
+    }
   }
 
   void _handleControlPanelEvents(ev) {
