@@ -84,32 +84,7 @@ class MapWindow {
     _x = _x - _step;
   }
 
-  void _handleContextMenu(ev) {
-
-    // prevent the context menu from showing up
-    ev.preventDefault();
-
-    var rec = _map.getBoundingClientRect();
-    double x = (ev.client.x / rec.width - 0.5) * 2.0;
-    double y = (-1.0) * ((ev.client.y - rec.top) / rec.height - 0.5) * 2.0;    
-
-    Vector2 ndcClick = new Vector2(x, y);
-
-    Vector3 pos = _renderer.intersect(ndcClick);
-
-    _streamController.add(new SelectPosition(pos.x, pos.z));
-  }
-
-  void _handleClick(ev) {
-    // get position in normalized device coordinates
-
-    var rec = _map.getBoundingClientRect();
-    double x = (ev.client.x / rec.width - 0.5) * 2.0;
-    double y = (-1.0) * ((ev.client.y - rec.top) / rec.height - 0.5) * 2.0;
-
-    // where the click event occurred in normalized device coordinates
-    Vector2 ndcClick = new Vector2(x, y);
-
+  int _getEntityAt(Vector2 ndc) {
     for (var entityId in _state['point_masses'].keys) {
 
       var pointMass = _state['point_masses'][entityId];
@@ -120,13 +95,52 @@ class MapWindow {
           pointMass['position']['y']);
 
 
-      if (_renderer.castRay(ndcClick, entity)) {
-        _streamController.add(new EntitySelect(int.parse(entityId)));
-        return;
+      if (_renderer.castRay(ndc, entity)) {
+        return int.parse(entityId);
       }
     }
+    return 0;
+  }
 
-    _streamController.add(new Unselect());
+  Vector2 _ndcFromMouseEvent(MouseEvent ev) {
+    var rec = _map.getBoundingClientRect();
+    double x = (ev.client.x / rec.width - 0.5) * 2.0;
+    double y = (-1.0) * ((ev.client.y - rec.top) / rec.height - 0.5) * 2.0;    
+
+    return new Vector2(x, y);
+  }
+ 
+  void _handleContextMenu(ev) {
+
+    // prevent the context menu from showing up
+    ev.preventDefault();
+
+    Vector2 ndc = _ndcFromMouseEvent(ev);
+    
+    int entityId = _getEntityAt(ndc);
+
+    if (0 < entityId) {
+      _streamController.add(new SelectTarget(entityId));
+    }
+    else {
+      Vector3 pos = _renderer.intersect(ndc);
+
+      _streamController.add(new SelectPosition(pos.x, pos.z));
+    }
+    
+  }
+
+  void _handleClick(ev) {
+    Vector2 ndc = _ndcFromMouseEvent(ev);
+
+    int entityId = _getEntityAt(ndc);
+
+    if (0 < entityId) {
+      _streamController.add(new EntitySelect(entityId));
+    }
+    else {
+      _streamController.add(new Unselect());
+    }
   }
 
   void update(state) {
