@@ -180,7 +180,7 @@ class Renderer {
   }
 
   Vector3 _getCamera() {
-    return new Vector3(20.0, 20.0, 20.0);
+    return new Vector3(30.0, 30.0, 30.0);
   }
 
   Vector3 ndcToWorld(Vector2 ndc) {
