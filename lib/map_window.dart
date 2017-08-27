@@ -6,23 +6,27 @@ import 'package:vector_math/vector_math.dart';
 
 import 'package:rts_demo_client/renderer.dart';
 
-class Unselect {
+class MapWindowEvent {
+  
+}
+
+class Unselect extends MapWindowEvent {
   Unselect();
 }
 
-class EntitySelect {
+class EntitySelect extends MapWindowEvent {
   int entityId;
 
   EntitySelect(this.entityId);
 }
 
-class SelectPosition {
+class SelectPosition extends MapWindowEvent {
   double x;
   double y;
   SelectPosition(this.x, this.y);
 }
 
-class SelectTarget {
+class SelectTarget extends MapWindowEvent {
   int entityId;
   SelectTarget(this.entityId);
 }
