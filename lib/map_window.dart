@@ -4,6 +4,7 @@ import 'dart:web_gl';
 
 import 'package:vector_math/vector_math.dart';
 
+import 'package:rts_demo_client/entity_container.dart';
 import 'package:rts_demo_client/renderer.dart';
 
 class MapWindowEvent {
@@ -33,6 +34,8 @@ class SelectTarget extends MapWindowEvent {
 
 class MapWindow {
   Element get element => _element;
+  CustomStream get events => _streamController.stream;
+
   Element _element;
   Element _leftBumper;
   Element _rightBumper;
@@ -42,18 +45,13 @@ class MapWindow {
   int _x = 0;
   int _y = 30;
   StreamController _streamController = new StreamController.broadcast();
-  CustomStream get events => _streamController.stream;
   // the translation in world units applied when the player's
   // pointer touches the 'bumper'
   int _step = 3;
   Renderer _renderer;
-  var _state = {
-    'point_masses' : {},
-    'unit_factories' : {},
-    'resources' : {}
-  };
+  EntityContainer _entityContainer;
 
-  MapWindow(int width, int height, this._playerId) {
+  MapWindow(int width, int height, this._playerId, this._entityContainer) {
     _canvas = new CanvasElement()
       ..width = width
       ..height = height
@@ -89,9 +87,9 @@ class MapWindow {
   }
 
   int _getEntityAt(Vector2 ndc) {
-    for (var entityId in _state['point_masses'].keys) {
+    for (var entityId in _entityContainer.state['point_masses'].keys) {
 
-      var pointMass = _state['point_masses'][entityId];
+      var pointMass = _entityContainer.state['point_masses'][entityId];
 
       Vector3 entity = new Vector3(
           pointMass['position']['x'],
@@ -115,7 +113,6 @@ class MapWindow {
   }
  
   void _handleContextMenu(ev) {
-
     // prevent the context menu from showing up
     ev.preventDefault();
 
@@ -131,7 +128,6 @@ class MapWindow {
 
       _streamController.add(new SelectPosition(pos.x, pos.z));
     }
-    
   }
 
   void _handleClick(ev) {
@@ -147,25 +143,21 @@ class MapWindow {
     }
   }
 
-  void update(state) {
-    _state = state;
-  }
-
-  void rerender() {
+  void redraw(time) {
 
     _renderer.clear();
     
-    _state['point_masses'].forEach((entityId, pointMass) {
+    _entityContainer.state['point_masses'].forEach((entityId, pointMass) {
       
       double x = pointMass['position']['x'];
       double y = pointMass['position']['y'];
 
       Vector3 color;
 
-      if (_state['unit_factories'].containsKey(entityId.toString())) {
+      if (_entityContainer.state['unit_factories'].containsKey(entityId.toString())) {
         color = new Vector3(1.0, 0.0, 0.0);
       }
-      else if (_state['resources'].containsKey(entityId.toString())) {
+      else if (_entityContainer.state['resources'].containsKey(entityId.toString())) {
         color = new Vector3(0.0, 1.0, 0.0);
       }
       else {

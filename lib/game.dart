@@ -1,12 +1,12 @@
 import 'dart:async';
 import 'dart:html';
 
+import 'package:rts_demo_client/control_panel.dart';
+import 'package:rts_demo_client/entity_container.dart';
 import 'package:rts_demo_client/main_menu.dart';
 import 'package:rts_demo_client/map_window.dart';
-import 'package:rts_demo_client/control_panel.dart';
 import 'package:rts_demo_client/server.dart';
 import 'package:rts_demo_client/top_bar.dart';
-
 
 class Game {
   Element get element => _element;
@@ -21,6 +21,8 @@ class Game {
   StreamSubscription _serverMsgSubscription;
   TopBar _topBar;
   MainMenu _mainMenu = new MainMenu();
+  EntityContainer _entityContainer = new EntityContainer();
+  bool _running = false;
 
   Game(String host, int port) {
     _element = new DivElement()
@@ -72,7 +74,7 @@ class Game {
     _topBar = new TopBar()
       ..events.listen(this._onTopBarEvent);
 
-    _map = new MapWindow(640, 480, _playerId)
+    _map = new MapWindow(640, 480, _playerId, _entityContainer)
       ..events.listen(this._handleMapEvent);
 
     _controlPanel = new ControlPanel(_playerId)
@@ -84,6 +86,8 @@ class Game {
       ..add(_controlPanel.element);
 
     _serverMsgSubscription.onData(this._updateCallback);
+
+    _loop();
   }
 
   void _updateCallback(data) {
@@ -93,8 +97,7 @@ class Game {
       _topBar.funds = _data['players'][_playerId.toString()]['funds'];
     } on NoSuchMethodError catch(e) {}
 
-    _map.update(data);
-    _map.rerender();
+    _entityContainer.update(data);
 
     _controlPanel.update(data);
   }
@@ -110,6 +113,15 @@ class Game {
   void _onTopBarEvent(ev) {
     if (ev is OpenMenu) {
       _element.children.add(_mainMenu.element);
+    }
+  }
+
+  _loop() async {
+    _running = true;
+    while (_running) {
+      var time = await window.animationFrame;
+      _entityContainer.tick(time);
+      _map.redraw(time);
     }
   }
 
