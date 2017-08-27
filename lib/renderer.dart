@@ -190,6 +190,38 @@ class Renderer {
     return (m * ndc).xyz;
   }
 
+  Vector3 intersect(Vector2 ndc) {
+
+    Vector3 view = _getLookAt() - _getCamera();
+    view.normalize();
+
+    Vector3 h = view.cross(new Vector3(0.0, 1.0, 0.0));
+    h.normalize();
+    
+    Vector3 v = h.cross(view);
+    v.normalize();
+
+    double rad = 30.0 * degrees2Radians;
+    double vLength = math.tan(rad / 2) * 1.0;
+    double hLength = vLength * (640.0 / 480.0);
+    
+    v.scale(vLength);
+    h.scale(hLength);
+
+    Vector3 pos = _getCamera() + view + h.scaled(ndc.x) + v.scaled(ndc.y);
+
+    Vector3 direction = pos - _getCamera();
+
+    direction.normalize();
+
+
+    double s = - _getCamera().y / direction.y;
+
+    Vector3 where = _getCamera() + direction.scaled(s);
+
+    return where;
+  }
+
   bool castRay(Vector2 ndc, Vector3 entity) {
     Vector3 view = _getLookAt() - _getCamera();
     view.normalize();

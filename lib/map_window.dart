@@ -88,6 +88,16 @@ class MapWindow {
 
     // prevent the context menu from showing up
     ev.preventDefault();
+
+    var rec = _map.getBoundingClientRect();
+    double x = (ev.client.x / rec.width - 0.5) * 2.0;
+    double y = (-1.0) * ((ev.client.y - rec.top) / rec.height - 0.5) * 2.0;    
+
+    Vector2 ndcClick = new Vector2(x, y);
+
+    Vector3 pos = _renderer.intersect(ndcClick);
+
+    _streamController.add(new SelectPosition(pos.x, pos.z));
   }
 
   void _handleClick(ev) {
