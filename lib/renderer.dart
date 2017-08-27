@@ -49,7 +49,7 @@ class Renderer {
   Renderer(RenderingContext gl) {
 
     _gl = new DebugRenderingContext(gl)
-      ..clearColor(1.0, 1.0, 1.0, 0.0)
+      ..clearColor(158.0 / 255.0, 154.0 / 255.0, 65.0 / 255.0, 1.0)
       ..enable(DEPTH_TEST);
     
     String vshader = myLoadShader('simple.vert');
