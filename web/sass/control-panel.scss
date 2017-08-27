@@ -63,8 +63,10 @@
 }
 
 .unit-factory-panel {
+  display: flex;
   &__queue {
     display: flex;
+    flex-grow: 1;
   }
   &__unit {
     margin-right: 5px;
@@ -74,5 +76,15 @@
     &:last-of-type {
       margin-right: 0;
     }
+  }
+  &__actions {
+    
+  }
+  &__button {
+    background-color: #564334;
+    border: none;
+    color: #cfb590;
+    padding: 3px;
+    border-radius: 3px;
   }
 }

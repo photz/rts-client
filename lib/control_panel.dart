@@ -102,16 +102,21 @@ class UnitFactoryPanel extends SubPanel {
 
     Element button = new ButtonElement()
       ..innerHtml = 'produce'
+      ..classes.add('unit-factory-panel__button')
       ..onClick.listen(this._handleClick);
 
     _queue = new DivElement()
       ..classes.add('unit-factory-panel__queue');
 
+    Element actions = new DivElement()
+      ..classes.add('unit-factory-panel__actions')
+      ..children.add(button);
+
     _element
       ..classes.add('control-panel__sub-panel')
       ..classes.add('unit-factory-panel')
       ..children.add(_queue)
-      ..children.add(button);
+      ..children.add(actions);
 
     update(data);
   }
