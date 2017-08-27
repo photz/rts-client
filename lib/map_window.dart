@@ -32,7 +32,7 @@ class MapWindow {
   Element _element;
   Element _leftBumper;
   Element _rightBumper;
-  CanvasElement _map;
+  CanvasElement _canvas;
   double _zoomFactor = 20.0;
   int _playerId;
   int _x = 0;
@@ -50,7 +50,7 @@ class MapWindow {
   };
 
   MapWindow(int width, int height, this._playerId) {
-    _map = new CanvasElement()
+    _canvas = new CanvasElement()
       ..width = width
       ..height = height
       ..classes.add('map-window__map');
@@ -67,13 +67,13 @@ class MapWindow {
 
     _element = new DivElement()
       ..classes.add('map-window')
-      ..children.add(_map)
+      ..children.add(_canvas)
       ..children.add(_leftBumper)
       ..children.add(_rightBumper)
       ..onClick.listen(this._handleClick)
       ..onContextMenu.listen(this._handleContextMenu);
 
-    _renderer = new Renderer(_map.getContext('webgl'));
+    _renderer = new Renderer(_canvas.getContext('webgl'));
   }
 
   void _onTouchLeftBumper(ev) {
@@ -103,7 +103,7 @@ class MapWindow {
   }
 
   Vector2 _ndcFromMouseEvent(MouseEvent ev) {
-    var rec = _map.getBoundingClientRect();
+    var rec = _canvas.getBoundingClientRect();
     double x = (ev.client.x / rec.width - 0.5) * 2.0;
     double y = (-1.0) * ((ev.client.y - rec.top) / rec.height - 0.5) * 2.0;    
 
