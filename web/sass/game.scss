@@ -16,24 +16,15 @@ body {
 .map-window {
   background: rgb(158,154,65);
   flex-basis: 70%;
+  position: relative;
 
   &__map {
     position: absolute;
-  }
-
-  &__entity {
-    position: absolute;
-    width: 10px;
-    height: 10px;
-    background: rgb(234,42,21);
-
-    &--friendly {
-      background: rgb(42,92,11);
-    }
-
-    &--gold-mine {
-      background-color: rgb(255,229,69);
-    }
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
   }
 
   &__bumper {

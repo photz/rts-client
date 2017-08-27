@@ -72,7 +72,7 @@ class Game {
     _topBar = new TopBar()
       ..events.listen(this._onTopBarEvent);
 
-    _map = new MapWindow(_playerId)
+    _map = new MapWindow(640, 480, _playerId)
       ..events.listen(this._handleMapEvent);
 
     _controlPanel = new ControlPanel(_playerId)
@@ -93,7 +93,8 @@ class Game {
       _topBar.funds = _data['players'][_playerId.toString()]['funds'];
     } on NoSuchMethodError catch(e) {}
 
-    _map.rerender(data);
+    _map.update(data);
+    _map.rerender();
 
     _controlPanel.update(data);
   }

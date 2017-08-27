@@ -2,6 +2,10 @@ import 'dart:async';
 import 'dart:html';
 import 'dart:web_gl';
 
+import 'package:vector_math/vector_math.dart';
+
+import 'package:rts_demo_client/renderer.dart';
+
 class Unselect {
   Unselect();
 }
@@ -28,7 +32,7 @@ class MapWindow {
   Element _element;
   Element _leftBumper;
   Element _rightBumper;
-  Element _map;
+  CanvasElement _map;
   double _zoomFactor = 20.0;
   int _playerId;
   int _x = 0;
@@ -38,7 +42,12 @@ class MapWindow {
   // the translation in world units applied when the player's
   // pointer touches the 'bumper'
   int _step = 3;
-  RenderingContext _gl;
+  Renderer _renderer;
+  var _state = {
+    'point_masses' : {},
+    'unit_factories' : {},
+    'resources' : {}
+  };
 
   MapWindow(int width, int height, this._playerId) {
     _map = new CanvasElement()
@@ -64,9 +73,7 @@ class MapWindow {
       ..onClick.listen(this._handleClick)
       ..onContextMenu.listen(this._handleContextMenu);
 
-    _gl = new RenderingContext(_map.getContext('webgl'))
-      ..clearColor(0.0, 0.0, 0.0, 0.0)
-      ..enable(DEPTH_TEST);
+    _renderer = new Renderer(_map.getContext('webgl'));
   }
 
   void _onTouchLeftBumper(ev) {
@@ -84,13 +91,60 @@ class MapWindow {
   }
 
   void _handleClick(ev) {
+    // get position in normalized device coordinates
+
+    var rec = _map.getBoundingClientRect();
+    double x = (ev.client.x / rec.width - 0.5) * 2.0;
+    double y = (-1.0) * ((ev.client.y - rec.top) / rec.height - 0.5) * 2.0;
+
+    // where the click event occurred in normalized device coordinates
+    Vector2 ndcClick = new Vector2(x, y);
+
+    for (var entityId in _state['point_masses'].keys) {
+
+      var pointMass = _state['point_masses'][entityId];
+
+      Vector3 entity = new Vector3(
+          pointMass['position']['x'],
+          0.0,
+          pointMass['position']['y']);
+
+
+      if (_renderer.castRay(ndcClick, entity)) {
+        _streamController.add(new EntitySelect(int.parse(entityId)));
+        return;
+      }
+    }
+
+    _streamController.add(new Unselect());
   }
 
-  void rerender(state) {
-    _gl.clear(COLOR_BUFFER_BIT | DEPTH_BUFFER_BIT);
+  void update(state) {
+    _state = state;
+  }
 
-    state['point_masses'].forEach((entityId, pointMass) {
+  void rerender() {
+
+    _renderer.clear();
+    
+    _state['point_masses'].forEach((entityId, pointMass) {
       
+      double x = pointMass['position']['x'];
+      double y = pointMass['position']['y'];
+
+      Vector3 color;
+
+      if (_state['unit_factories'].containsKey(entityId.toString())) {
+        color = new Vector3(1.0, 0.0, 0.0);
+      }
+      else if (_state['resources'].containsKey(entityId.toString())) {
+        color = new Vector3(0.0, 1.0, 0.0);
+      }
+      else {
+        color = new Vector3(0.0, 0.0, 1.0);
+      }
+
+      _renderer.render(x, y, color);
       
     });
   }
