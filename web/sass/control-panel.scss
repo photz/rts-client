@@ -67,6 +67,7 @@
   &__queue {
     display: flex;
     flex-grow: 1;
+    flex-wrap: wrap;
   }
   &__unit {
     margin-right: 5px;
@@ -78,7 +79,9 @@
     }
   }
   &__actions {
-    
+    display: flex;
+    flex-wrap: wrap;
+    align-items: start;
   }
   &__button {
     background-color: #564334;
