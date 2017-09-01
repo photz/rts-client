@@ -126,9 +126,12 @@ class Game {
   }
 
   void _handleControlPanelEvents(ev) {
-    _server.send({
-      'entity_id' : ev.entityId,
-      'msg_type' : 'create_unit'
-    });
+    if (ev is CreateUnit) {
+      _server.send({
+        'entity_id' : ev.entityId,
+        'msg_type' : 'create_unit',
+        'template_id' : ev.templateId
+      });
+    }
   }
 }

@@ -3,7 +3,8 @@ import 'dart:html';
 
 class CreateUnit {
   int entityId;
-  CreateUnit(this.entityId);
+  int templateId;
+  CreateUnit(this.entityId, this.templateId);
 }
 
 
@@ -91,6 +92,7 @@ class UnitFactoryPanel extends SubPanel {
   StreamController _streamController = new StreamController.broadcast();
   Element _queue;
   int _playerId;
+  Element _actions;
 
   UnitFactoryPanel(this._playerId, this._entityId, data) {
 
@@ -100,23 +102,18 @@ class UnitFactoryPanel extends SubPanel {
       return;
     }
 
-    Element button = new ButtonElement()
-      ..innerHtml = 'produce'
-      ..classes.add('unit-factory-panel__button')
-      ..onClick.listen(this._handleClick);
-
     _queue = new DivElement()
       ..classes.add('unit-factory-panel__queue');
 
-    Element actions = new DivElement()
-      ..classes.add('unit-factory-panel__actions')
-      ..children.add(button);
+    _actions = new DivElement()
+      ..onClick.listen(this._handleClick)
+      ..classes.add('unit-factory-panel__actions');
 
     _element
       ..classes.add('control-panel__sub-panel')
       ..classes.add('unit-factory-panel')
       ..children.add(_queue)
-      ..children.add(actions);
+      ..children.add(_actions);
 
     update(data);
   }
@@ -127,6 +124,21 @@ class UnitFactoryPanel extends SubPanel {
 
       return;
     }
+
+    _actions.children.clear();
+
+    data['unit_factories'][_entityId.toString()]['producibles'].forEach((item) {
+          var templateId = item[0];
+          var cost = item[1];
+
+          Element button = new ButtonElement()
+            ..innerHtml = templateId.toString() + ' for ' + cost.toString()
+            ..dataset['template-id'] = templateId.toString()
+            ..classes.add('unit-factory-panel__button');
+
+          _actions.children.add(button);
+        });
+
 
     _queue.children.clear();
 
@@ -141,7 +153,11 @@ class UnitFactoryPanel extends SubPanel {
   }
 
   void _handleClick(ev) {
-    _streamController.add(new CreateUnit(_entityId));
+    if (ev.target.dataset.containsKey('template-id')) {
+      int templateId = int.parse(ev.target.dataset['template-id']);
+
+      _streamController.add(new CreateUnit(_entityId, templateId));
+    }
   }
 }
 
