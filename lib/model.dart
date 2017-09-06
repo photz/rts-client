@@ -10,11 +10,11 @@ class Vertex {
   Vector3 get position => this._model.positions[this.vertexIndex];
   Vector3 get normal => this._model.normals[this.normalIndex];
 
-  Vertex(Model model, int vertexIndex, int normalIndex)
-    : _model = model
+  Vertex(this._model, this.vertexIndex, this.normalIndex)
   {
-    this.vertexIndex = vertexIndex;
-    this.normalIndex = normalIndex;
+    if (_model.positions.length <= vertexIndex) {
+      throw new Exception('index too high');
+    }
   }
 }
 
@@ -117,34 +117,32 @@ class Model {
 
 
   Float32List positionsAndNormalsToArr() {
-    const int floatsPerTriangle = 3 * 3 * 2;
-    const int floatsPerVertex = 3 * 2;
     const int floatsPerVector = 3;
-    int vertices = 3 * this._triangles.length;
-    int elements = 6 * vertices;
-    Float32List list = new Float32List(elements);
 
-    int triangleIndex = 0;
-    for (Triangle triangle in this._triangles) {
+    // two vectors for the position and the normal
+    const int floatsPerVertex = floatsPerVector * 2;
+    
+    const int floatsPerTriangle = 3 * floatsPerVertex;
 
-      int vertexIndex = 0;
-      for (Vertex vertex in triangle.vertices) {
+    final int elements = floatsPerTriangle * _triangles.length;
+    final Float32List list = new Float32List(elements);
 
-        int offset = triangleIndex * floatsPerTriangle
-          + vertexIndex * floatsPerVertex;
+    _triangles.asMap().forEach((triangleIndex, triangle) {
+
+      int triangleOffset = triangleIndex * floatsPerTriangle;
+
+      triangle.vertices.asMap().forEach((vertexIndex, vertex) {
+
+        int offset = triangleOffset + vertexIndex * floatsPerVertex;
 
         vertex.position.copyIntoArray(list, offset);
+
         vertex.normal.copyIntoArray(list, offset + floatsPerVector);
         
-        vertexIndex++;
-      }
-
-      triangleIndex++;
-    }
+      });
+    });
 
     return list;
   }
-  
-
 }
 
