@@ -23,11 +23,14 @@ class Triangle {
 
   List<Vertex> get vertices => _vertices;
 
-  Triangle(List<Vertex> _vertices) {
+  Triangle(this._vertices) {
+    if (_vertices.length != 3) {
+      throw new Exception("only triangular faces are supported");
+    }
+
     if (null == _vertices) {
       throw new Exception('no vertices provided');
     }
-    this._vertices = _vertices;
   }
 
   String toString() {
