@@ -4,14 +4,15 @@ import 'package:vector_math/vector_math.dart';
 
 class Vertex {
   final Model _model;
-  int vertexIndex;
-  int normalIndex;
+  final int _vertexIndex;
+  final int _normalIndex;
 
-  Vector3 get position => this._model.positions[this.vertexIndex];
-  Vector3 get normal => this._model.normals[this.normalIndex];
+  Vector3 get position => _model.positions[_vertexIndex];
+  Vector3 get normal => _model.normals[_normalIndex];
+  int get vertexIndex => _vertexIndex;
+  int get normalIndex => _normalIndex;
 
-  Vertex(this._model, this.vertexIndex, this.normalIndex)
-  {
+  Vertex(this._model, this._vertexIndex, this._normalIndex) {
     if (_model.positions.length <= vertexIndex) {
       throw new Exception('index too high');
     }
@@ -19,7 +20,7 @@ class Vertex {
 }
 
 class Triangle {
-  List<Vertex> _vertices;
+  final List<Vertex> _vertices;
 
   List<Vertex> get vertices => _vertices;
 
@@ -54,11 +55,7 @@ class Model {
     List<String> lines = objFile.split("\n");
 
     this._positions = new List.from(lines.where(_isVertexDef).map(_vertexDefToVertex));
-
     this._normals = new List.from(lines.where(_isNormalDef).map(_normalDefToNormal));
-
-
-
     this._triangles = new List.from(lines.where(_isFaceDef).map(this._faceDefToFace));
   }
 
@@ -115,7 +112,6 @@ class Model {
   // such that v and u have the same index in the index buffer
   // v and u also have the same position and the same normal
 
-
   Float32List positionsAndNormalsToArr() {
     const int floatsPerVector = 3;
 
@@ -138,7 +134,6 @@ class Model {
         vertex.position.copyIntoArray(list, offset);
 
         vertex.normal.copyIntoArray(list, offset + floatsPerVector);
-        
       });
     });
 
