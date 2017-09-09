@@ -1,6 +1,6 @@
-import 'package:vector_math/vector_math.dart';
 import 'dart:typed_data';
 
+import 'package:vector_math/vector_math.dart';
 
 class Vertex {
   final Model _model;

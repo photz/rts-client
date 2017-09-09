@@ -1,12 +1,14 @@
-import 'package:path/path.dart' as path;
+import 'dart:io';
+import 'dart:async';
+
 import 'package:analyzer/analyzer.dart';
 import 'package:analyzer/src/generated/ast.dart';
 import 'package:analyzer/src/generated/error.dart';
 import 'package:analyzer/src/generated/parser.dart';
 import 'package:analyzer/src/generated/scanner.dart';
 import 'package:barback/barback.dart';
-import 'dart:io';
-import 'dart:async';
+import 'package:path/path.dart' as path;
+
 
 class ModelLoader extends Transformer {
   ModelLoader.asPlugin();
