@@ -4,6 +4,7 @@ dependencies:
   vector_math: any
   barback: any
   analyzer: any
+  test: any
 transformers:
 - rts_demo_client/shader_loader
 - rts_demo_client/model_loader
