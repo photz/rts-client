@@ -57,6 +57,7 @@ class MapWindow {
   Mesh _tankMesh;
   Mesh _baseMesh;
   Mesh _mineMesh;
+  Mesh _builderMesh;
   Vector3 _camera = new Vector3(30.0, 30.0, 30.0);
   TerrainRenderer _terrainRenderer;
   Heightmap _heightmap;
@@ -113,6 +114,8 @@ class MapWindow {
     _terrainRenderer = new TerrainRenderer(gl, _heightmap);
 
     _mineMesh = new Mesh(gl, new Model.fromObj(myLoadModel('thing.obj')));
+
+    _builderMesh = new Mesh(gl, new Model.fromObj(myLoadModel('builder.obj')));
 
     Model model = new Model.fromObj(myLoadModel('minitank.obj'));
     _tankMesh = new Mesh(gl, model);
@@ -241,7 +244,12 @@ class MapWindow {
       Vector3 color;
       Mesh mesh;
 
-      if (_entityContainer.state['unit_factories'].containsKey(entityId.toString())) {
+      
+      if (_entityContainer.state['unit_factories'].containsKey(entityId.toString()) && _entityContainer.state['commands'].containsKey(entityId.toString())) {
+        color = new Vector3(1.0, 0.0, 0.0);
+        mesh = _builderMesh;
+      }
+      else if (_entityContainer.state['unit_factories'].containsKey(entityId.toString())) {
         color = new Vector3(1.0, 0.0, 0.0);
         mesh = _baseMesh;
       }
