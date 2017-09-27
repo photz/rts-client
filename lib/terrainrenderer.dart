@@ -17,22 +17,13 @@ class TerrainRenderer {
   TerrainRenderer(RenderingContext gl, Heightmap this._heightmap) {
     _gl = new DebugRenderingContext(gl);
 
-    String vshader = myLoadShader('heightmap.vert');
-    String fshader = myLoadShader('heightmap.frag');
+    String vshader = myLoadShader('terrain.vert');
+    String fshader = myLoadShader('terrain.frag');
     _program = createProgram(_gl, vshader, fshader);
     _gl.useProgram(_program);
     assert(_gl.isProgram(_program));
     _buffer = _bufferHeightmap(_heightmap);
     assert(_gl.isBuffer(_buffer));
-
-    int heightAttr = _a('a_height');
-    print('height attr: ' + heightAttr.toString());
-
-    int xAttr = _a('a_x');
-    print('x attr: ' + xAttr.toString());
-
-    int yAttr = _a('a_y');
-    print('y attr: ' + yAttr.toString());
   }
 
   render(Matrix4 projectionMatrix, Matrix4 viewMatrix) {
@@ -42,6 +33,22 @@ class TerrainRenderer {
 
     _gl.uniformMatrix4fv(_u('u_ViewMatrix'), false, matrix.storage);
 
+    
+    // u_LightColor
+    _gl.uniform3fv(_u('u_LightColor'),
+        new Vector3(1.0, 1.0, 1.0).storage);
+    // u_LightPosition
+    _gl.uniform3fv(_u('u_LightPosition'),
+        new Vector3(100.0, 100.0, 100.0).storage);
+    // u_AmbientLight
+    _gl.uniform3fv(_u('u_AmbientLight'),
+        new Vector3(0.05, 0.05, 0.05).storage);
+
+    // u_NormalMatrix
+    Matrix4 normalMatrix = new Matrix4.inverted(new Matrix4.identity());
+    normalMatrix.transpose();
+    _gl.uniformMatrix4fv(_u('u_NormalMatrix'), false, normalMatrix.storage);
+
     _setUpPointers(_buffer);
 
     _gl.drawArrays(TRIANGLES, 0, _heightmap.size);
@@ -50,7 +57,7 @@ class TerrainRenderer {
   _setUpPointers(buffer) {
     _gl.bindBuffer(ARRAY_BUFFER, buffer);
 
-    const int stride = 3 * Float32List.BYTES_PER_ELEMENT;
+    const int stride = 6 * Float32List.BYTES_PER_ELEMENT;
 
     _gl.vertexAttribPointer(_a('a_x'), 1, FLOAT, false, stride, 0);
     _gl.enableVertexAttribArray(_a('a_x'));
@@ -63,6 +70,9 @@ class TerrainRenderer {
         2 * Float32List.BYTES_PER_ELEMENT);
     _gl.enableVertexAttribArray(_a('a_height'));
 
+    _gl.vertexAttribPointer(_a('a_vn'), 3, FLOAT, false, stride,
+        3 * Float32List.BYTES_PER_ELEMENT);
+    _gl.enableVertexAttribArray(_a('a_vn'));
   }
 
   Buffer _bufferHeightmap(Heightmap heightmap) {
